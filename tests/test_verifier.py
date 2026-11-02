@@ -195,3 +195,10 @@ def test_expiry_boundary(tmp_path):
     out = execute(data, tmp_path)
     assert plain_output(out)["records"] == [{"lot_id": "C", "units": 5}]
     assert out.total == 1
+
+
+def test_crlf_is_not_canonical_bytes(tmp_path):
+    out = execute(SAMPLE, tmp_path)
+    artifact = tmp_path / out.path
+    artifact.write_bytes(artifact.read_bytes().replace(b"\n", b"\r\n"))
+    assert not verifier.verify_task(TASK, given(SAMPLE), out, None, str(tmp_path))["valid"]
