@@ -46,7 +46,7 @@ def verify_output(input_value, output_value, workspace):
     if path is None or not path.is_file():
         return result(False, "artifact is missing, is a symlink, or escapes the workspace")
     try:
-        content = path.read_text(encoding="utf-8")
+        content = path.read_bytes().decode("utf-8")
     except (OSError, UnicodeError):
         return result(False, "artifact cannot be read as UTF-8")
     if content != encoded(rows, total):
