@@ -1,0 +1,27 @@
+_ > nanoagent.plugin.v0001.ManifestConfig:
+id: sz-fefo-allocation
+name: FEFO Allocation
+version: 1.0.0
+status: ready
+spec: nanoagent.plugin/v0001
+
+runtime > nanoagent.plugin.v0001.RuntimeConfig:
+  type: mcp_stdio
+  command: [uv, run, --frozen, python, -m, plugin]
+
+permissions > nanoagent.plugin.v0001.PermissionsConfig:
+  network > nanoagent.plugin.v0001.NetworkConfig:
+    hosts: []
+  filesystem > nanoagent.plugin.v0001.FilesystemConfig:
+    write: [workspace]
+
+tools > dict[contract.Tool, nanoagent.plugin.v0001.ToolConfig]:
+  allocate_stock:
+    description: "Allocate a shipment from unexpired lots in first-expiring-first-out order, with an explicit shortage."
+tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
+  allocate-stock:
+    description: "Allocate a shipment from unexpired lots in first-expiring-first-out order, with an explicit shortage."
+    runner: tool
+    tools: [allocate_stock]
+    reference: null
+    instructions: "Eligible means expires_day >= ship_day. Order lots by (expires_day, lot_id); consume each before the next. Omit zero allocations. total is the nonnegative shortage. Save canonical JSON with records and total at destination and return the same rows and total with its path."
